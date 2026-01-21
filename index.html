@@ -1,11 +1,975 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portofolio — Fawwaz</title>
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide icons (will render icons) -->
+  <script src="https://unpkg.com/lucide-icons"></script>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== Theme colors & base ===== */
+    :root{
+      --bg:#070707;
+      --panel:#0f0f10;
+      --muted:#bfbfbf;
+      --gold:#D4AF37;
+      --gold-strong:#ffdd66;
+      --glass: rgba(255,215,0,0.06);
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 700px at 10% 10%, rgba(212,175,55,0.04), transparent 10%),
+                  radial-gradient(900px 500px at 90% 90%, rgba(212,175,55,0.03), transparent 10%),
+                  var(--bg);
+      color: #eaeaea;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.4;
+    }
+
+    /* ===== Container max width ===== */
+    .container {
+      max-width:1200px;
+      margin-left:auto;
+      margin-right:auto;
+      padding-left:1rem;
+      padding-right:1rem;
+    }
+
+    /* ===== Card styles (black-gold) ===== */
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.18));
+      border:1px solid rgba(212,175,55,0.12);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 18px rgba(212,175,55,0.03);
+      border-radius:14px;
+      backdrop-filter: blur(6px);
+    }
+    .card-compact{
+      padding:0.75rem;
+    }
+    .card-md{
+      padding:1.25rem;
+    }
+    .gold-text{ color:var(--gold); }
+    .muted{ color:var(--muted); }
+
+    /* ===== small card grid specifics ===== */
+    .skill-card {
+      transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s ease;
+      transform-origin:center;
+    }
+    .skill-card:hover{
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 40px rgba(212,175,55,0.06);
+    }
+
+    /* ===== progress bar ===== */
+    .progress-track {
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(0,0,0,0.12));
+      height:10px; border-radius:999px; overflow:hidden;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .progress-fill {
+      height:100%;
+      border-radius:999px;
+      background: linear-gradient(90deg, rgba(212,175,55,0.95), rgba(255,221,102,0.95));
+      box-shadow: 0 4px 12px rgba(212,175,55,0.12);
+      transform-origin:left center;
+      transition: width .9s cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* ===== hero styling ===== */
+    .hero {
+      min-height:80vh;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:2rem;
+      padding-top:4.5rem;
+      padding-bottom:4.5rem;
+    }
+    .profile-photo {
+      width:200px; height:200px;
+      border-radius:999px;
+      object-fit:cover;
+      border:4px solid rgba(212,175,55,0.12);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 30px rgba(212,175,55,0.08);
+    }
+    .photo-glow {
+      position:relative;
+      display:inline-block;
+      border-radius:999px;
+      padding:6px;
+      background: conic-gradient(from 180deg at 50% 50%, rgba(212,175,55,0.06), transparent 40%);
+      transition: transform .6s ease;
+    }
+    .photo-glow:hover{ transform: scale(1.04); }
+
+    /* typing cursor */
+    .typing { white-space:pre-wrap; }
+    .typing .cursor {
+      display:inline-block;
+      width:2px; height:1.15em; margin-left:6px;
+      background:var(--gold-strong);
+      animation: blink 900ms steps(1) infinite;
+      vertical-align:middle;
+    }
+    @keyframes  blink { 0%{opacity:1}50%{opacity:.15}100%{opacity:1} }
+
+    /* reveal animations */
+    .reveal {
+      opacity:0; transform: translateY(26px); transition:all .8s cubic-bezier(.2,.9,.2,1);
+    }
+    .reveal.in-view{ opacity:1; transform: translateY(0); }
+
+    /* small helper */
+    .badge {
+      background: linear-gradient(90deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04));
+      color:var(--gold);
+      padding:0.28rem 0.5rem; border-radius:999px; font-weight:600; font-size:.78rem;
+      border:1px solid rgba(212,175,55,0.08);
+    }
+
+    /* contact form */
+    .input, textarea {
+      background: rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.04);
+      padding:.6rem .75rem; border-radius:8px; color:inherit; width:100%;
+    }
+    .btn-gold {
+      background: linear-gradient(90deg, var(--gold), var(--gold-strong));
+      color:#000; padding:.6rem .9rem; border-radius:10px; font-weight:700;
+      box-shadow: 0 8px 24px rgba(212,175,55,0.12);
+      border: none; cursor:pointer;
+    }
+    .btn-ghost {
+      background:transparent; border:1px solid rgba(212,175,55,0.08); color:var(--gold);
+      padding:.5rem .8rem; border-radius:8px; cursor:pointer;
+    }
+
+    /* responsive tweaks */
+    @media (max-width: 900px){
+      .hero { flex-direction:column-reverse; text-align:center; gap:1.25rem; padding-top:3rem; padding-bottom:3rem; }
+      .profile-photo{ width:160px; height:160px;}
+    }
+    /* nice scrollbar */
+    ::-webkit-scrollbar{ height:10px; width:10px;}
+    ::-webkit-scrollbar-thumb{ background: linear-gradient(180deg, rgba(212,175,55,0.18), rgba(212,175,55,0.06)); border-radius:999px; }
+  </style>
 </head>
 <body>
-    <h1>Halo ini website saya!</h1>
+
+  <!-- NAVBAR -->
+  <header class="w-full fixed top-0 left-0 z-50 bg-black/50 backdrop-blur-sm border-b border-yellow-900/10">
+    <div class="container flex items-center justify-between py-3">
+      <div class="flex items-center gap-3">
+        <div class="badge">Fawwaz</div>
+        <div class="muted text-sm">Siswa XI SMK — SIJA</div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="#home" class="muted hover:gold-text transition">Home</a>
+        <a href="#about" class="muted hover:gold-text transition">Tentang</a>
+        <a href="#skills" class="muted hover:gold-text transition">Skill</a>
+        <a href="#projects" class="muted hover:gold-text transition">Proyek</a>
+        <a href="#contact" class="muted hover:gold-text transition">Kontak</a>
+        <button id="download-resume" class="btn-ghost ml-2">Download CV</button>
+      </nav>
+
+      <div class="md:hidden">
+        <button id="menu-toggle" class="btn-ghost">Menu</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-20">
+    <!-- HERO -->
+    <section id="home" class="container hero reveal" data-reveal>
+      <div class="flex-1">
+        <h1 class="text-4xl md:text-5xl font-extrabold gold-text leading-tight mb-4">Halo! Saya <span class="text-white">Fawwaz</span></h1>
+        <p class="muted mb-4">Siswa kelas XI SMK jurusan SIJA. Ruang eksplorasi digital saya untuk belajar pemrograman, desain web, dan mengembangkan kemampuan teknis & interpersonal.</p>
+
+        <div class="typing text-lg md:text-xl text-gray-200 mb-6" id="intro-typing">
+          <!-- typed text injected by JS -->
+          <span class="cursor"></span>
+        </div>
+
+        <div class="flex items-center gap-3 flex-wrap">
+          <a href="#skills" class="btn-gold">Lihat Skill</a>
+          <a href="#projects" class="btn-ghost">Lihat Proyek</a>
+          <a href="#contact" class="btn-ghost">Hubungi</a>
+        </div>
+
+        <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="card card-compact p-3 text-center">
+            <div class="text-xs muted">Role</div>
+            <div class="font-semibold gold-text">Fullstack Learner</div>
+          </div>
+          <div class="card card-compact p-3 text-center">
+            <div class="text-xs muted">Tool</div>
+            <div class="font-semibold gold-text">VSCode • Linux</div>
+          </div>
+          <div class="card card-compact p-3 text-center">
+            <div class="text-xs muted">Focus</div>
+            <div class="font-semibold gold-text">Web Dev</div>
+          </div>
+          <div class="card card-compact p-3 text-center">
+            <div class="text-xs muted">Location</div>
+            <div class="font-semibold gold-text">Indonesia</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="w-64 md:w-80 text-center">
+        <div class="photo-glow inline-block p-1 card">
+          <!-- Use placeholder - replace with your photo URL -->
+          <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=0b6aa2a6b2f3b8af0f94bbd4b8b9f3d9"
+               alt="Foto Fawwaz" class="profile-photo">
+        </div>
+        <div class="mt-4">
+          <div class="font-semibold gold-text text-lg">Fawwaz</div>
+          <div class="muted text-sm">XI SMK — SIJA</div>
+        </div>
+
+        <div class="mt-6 card card-md">
+          <div class="text-xs muted mb-2">Tentang singkat</div>
+          <div class="text-sm text-gray-200">Saya sedang belajar pengembangan web (frontend & backend), serta mengasah kemampuan Linux dan komunikasi tim untuk proyek nyata.</div>
+          <div class="mt-3 flex gap-2 justify-center">
+            <a class="btn-ghost" href="#">GitHub</a>
+            <a class="btn-ghost" href="#">LinkedIn</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="container py-12 reveal" data-reveal>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="md:col-span-2 card card-md">
+          <h3 class="gold-text text-2xl font-bold mb-3">Tentang Saya</h3>
+          <p class="muted mb-3">Halo! Saya Fawwaz — siswa kelas XI SMK jurusan SIJA. Website ini saya buat sebagai ruang eksplorasi digital, tempat saya belajar, mencoba, dan mengembangkan kemampuan di bidang teknologi, khususnya pemrograman dan desain web.</p>
+          <p class="text-sm text-gray-300">Saya tertarik pada pembuatan antarmuka yang bersih, backend yang dapat diandalkan, serta administrasi server (Linux). Selain hardskill teknis, saya juga fokus pada softskill: teamwork, komunikasi efektif, dan pemecahan masalah.</p>
+
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <div class="card p-3">
+              <div class="text-xs muted">Education</div>
+              <div class="font-semibold">SMK — Jurusan SIJA</div>
+            </div>
+            <div class="card p-3">
+              <div class="text-xs muted">Availability</div>
+              <div class="font-semibold">Open for Collaboration</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card card-md">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs muted">Quick Stats</div>
+                <div class="font-bold text-2xl gold-text">5+</div>
+                <div class="muted text-sm">Projects</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs muted">Experience</div>
+                <div class="font-bold text-2xl gold-text">Learning</div>
+                <div class="muted text-sm">Growing daily</div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <div class="text-xs muted">Kompetensi</div>
+              <div class="mt-2 text-sm muted">Frontend, Backend, Linux, Database, Communication</div>
+            </div>
+          </div>
+
+          <div class="mt-4 card card-md">
+            <div class="text-xs muted">Languages</div>
+            <div class="mt-2 grid gap-2">
+              <div class="text-sm">HTML • CSS • JavaScript</div>
+              <div class="text-sm">PHP • SQL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="container py-12 reveal" data-reveal>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="gold-text text-2xl font-bold">Hard Skill & Soft Skill</h2>
+        <div class="muted text-sm">Card kecil, rapi, interaktif</div>
+      </div>
+
+      <!-- Filter / controls -->
+      <div class="flex gap-3 items-center mb-6">
+        <div class="card card-compact p-2 flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="muted"><path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div class="text-sm muted">Filter:</div>
+          <select id="skill-filter" class="input text-sm" style="width:160px;">
+            <option value="all">Semua</option>
+            <option value="hard">Hard Skill</option>
+            <option value="soft">Soft Skill</option>
+          </select>
+        </div>
+
+        <div class="card card-compact p-2 flex items-center gap-2">
+          <div class="text-sm muted">Sort:</div>
+          <select id="skill-sort" class="input text-sm" style="width:160px;">
+            <option value="default">Default</option>
+            <option value="alpha">A → Z</option>
+            <option value="power">Kemampuan (desc)</option>
+          </select>
+        </div>
+
+        <div class="ml-auto flex gap-2">
+          <button id="expand-all" class="btn-ghost">Expand All</button>
+          <button id="collapse-all" class="btn-ghost">Collapse All</button>
+        </div>
+      </div>
+
+      <!-- SKILL GRID: small cards -->
+      <div id="skills-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <!-- Card example -->
+        <!-- We'll include a set of cards representing hardskill + softskill -->
+        <!-- Each card has data-type, data-name, data-power for JS filter/sort -->
+        <!-- 1 -->
+        <article class="card skill-card p-3 reveal" data-reveal data-type="hard" data-name="Frontend" data-power="85">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <!-- inline fallback svg icon (monitor) -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Frontend</div>
+              <div class="text-xs muted">HTML • CSS • JS</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="85"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Membuat antarmuka responsif, implementasi UX dasar, optimasi performa, dan interaktivitas menggunakan JavaScript.
+          </div>
+        </article>
+
+        <!-- 2 -->
+        <article class="card skill-card p-3 reveal" data-reveal data-type="hard" data-name="Backend" data-power="70">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 7h18M6 12h12M4 17h16" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Backend</div>
+              <div class="text-xs muted">Server • DB • API</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="70"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Implementasi logika server sederhana, CRUD, routing dasar, dan integrasi database (MySQL / SQLite).
+          </div>
+        </article>
+
+        <!-- 3 -->
+        <article class="card skill-card p-3 reveal" data-reveal data-type="hard" data-name="Linux" data-power="75">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3v6m0 0v12" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Linux</div>
+              <div class="text-xs muted">Terminal • Server</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="75"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Penggunaan terminal, manajemen file, user & permission, pemasangan layanan sederhana di server lokal.
+          </div>
+        </article>
+
+        <!-- 4 -->
+        <article class="card skill-card p-3 reveal" data-reveal data-type="hard" data-name="Database" data-power="60">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Database</div>
+              <div class="text-xs muted">MySQL • SQL</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="60"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Dasar desain skema, query CRUD, relasi sederhana, dan backup/restore data dasar.
+          </div>
+        </article>
+
+        <!-- 5 -->
+        <article class="card skill-card p-3 reveal" data-reveal data-type="hard" data-name="Coding" data-power="80">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M16 18l6-6-6-6M8 6L2 12l6 6" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Coding</div>
+              <div class="text-xs muted">Problem Solving</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="80"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Logika pemrograman, debugging, serta solusi untuk soal algoritma sederhana.
+          </div>
+        </article>
+
+        <!-- Soft skills -->
+        <article class="card skill-card p-3 reveal" data-reveal data-type="soft" data-name="Teamwork" data-power="88">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.2"/><path d="M23 19v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Teamwork</div>
+              <div class="text-xs muted">Kerja tim</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="88"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Koordinasi tugas, pembagian kerja, dan menyelesaikan bagian dari proyek tim.
+          </div>
+        </article>
+
+        <article class="card skill-card p-3 reveal" data-reveal data-type="soft" data-name="Communication" data-power="82">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Communication</div>
+              <div class="text-xs muted">Presentasi</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="82"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Menyampaikan ide di depan kelompok, mendokumentasikan hasil, dan memberikan feedback konstruktif.
+          </div>
+        </article>
+
+        <article class="card skill-card p-3 reveal" data-reveal data-type="soft" data-name="Adaptability" data-power="78">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3v3m0 12v3M20.66 7.34l-2.12 2.12M5.46 18.54l-2.12 2.12M21 12h-3M6 12H3" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Adaptability</div>
+              <div class="text-xs muted">Cepat Belajar</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="78"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Cepat beradaptasi pada tools baru dan alur kerja tim yang berbeda.
+          </div>
+        </article>
+
+        <article class="card skill-card p-3 reveal" data-reveal data-type="soft" data-name="Critical Thinking" data-power="76">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-black/30 rounded-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M9 12h6" stroke="currentColor" stroke-width="1.2"/><path d="M12 3v9" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold gold-text">Critical Thinking</div>
+              <div class="text-xs muted">Analisa</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:0%" data-target="76"></div>
+            </div>
+          </div>
+          <button class="mt-3 btn-ghost w-full show-detail">Detail</button>
+          <div class="detail hidden mt-3 text-sm text-gray-300">
+            Analisa masalah, merancang solusi, dan mengevaluasi hasil.
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Projects (sample) -->
+    <section id="projects" class="container py-12 reveal" data-reveal>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="gold-text text-2xl font-bold">Proyek</h2>
+        <div class="muted text-sm">Proyek kecil & eksperimen</div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="card card-md reveal">
+          <h3 class="font-bold gold-text">Website CRUD - Materi Edukasi</h3>
+          <p class="muted text-sm mb-3">Sistem sederhana untuk menyimpan & menampilkan materi menggunakan PHP dan MySQL (tugas sekolah).</p>
+          <div class="mt-3 flex gap-2">
+            <span class="badge">PHP</span>
+            <span class="badge">MySQL</span>
+            <span class="badge">HTML</span>
+          </div>
+          <div class="mt-4">
+            <a class="btn-ghost" href="#">Detail</a>
+          </div>
+        </div>
+
+        <div class="card card-md reveal">
+          <h3 class="font-bold gold-text">Portfolio (this)</h3>
+          <p class="muted text-sm mb-3">Portofolio pribadi dengan tampilan modern, animasi, dan card skill interaktif.</p>
+          <div class="mt-3 flex gap-2">
+            <span class="badge">HTML</span>
+            <span class="badge">Tailwind</span>
+            <span class="badge">JS</span>
+          </div>
+          <div class="mt-4">
+            <a class="btn-ghost" href="#">Preview</a>
+          </div>
+        </div>
+
+        <div class="card card-md reveal">
+          <h3 class="font-bold gold-text">Eksperimen Linux</h3>
+          <p class="muted text-sm mb-3">Pengaturan server lokal dan automasi tugas dengan shell script.</p>
+          <div class="mt-3 flex gap-2">
+            <span class="badge">Linux</span>
+            <span class="badge">Shell</span>
+          </div>
+          <div class="mt-4">
+            <a class="btn-ghost" href="#">Detail</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline / Experience -->
+    <section class="container py-12 reveal" data-reveal>
+      <h2 class="gold-text text-2xl font-bold mb-6">Timeline Singkat</h2>
+      <div class="card p-4">
+        <ol class="relative border-l border-yellow-700/20">
+          <li class="mb-10 ml-6">
+            <span class="absolute -left-3 flex items-center justify-center w-6 h-6 rounded-full bg-yellow-500"></span>
+            <h3 class="text-lg font-semibold gold-text">2025 — Mulai Fokus Web</h3>
+            <p class="muted">Mulai belajar frontend dan backend lebih intensif, dan mengerjakan proyek sekolah.</p>
+          </li>
+          <li class="mb-10 ml-6">
+            <span class="absolute -left-3 flex items-center justify-center w-6 h-6 rounded-full bg-yellow-500"></span>
+            <h3 class="text-lg font-semibold gold-text">2024 — Dasar Linux & Terminal</h3>
+            <p class="muted">Mempelajari dasar Linux untuk keperluan server dan manajemen file.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="container py-12 reveal" data-reveal>
+      <h2 class="gold-text text-2xl font-bold mb-6">Kontak</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card card-md">
+          <form id="contact-form" class="space-y-4">
+            <div>
+              <label class="text-xs muted">Nama</label>
+              <input name="name" class="input" placeholder="Nama kamu" required>
+            </div>
+            <div>
+              <label class="text-xs muted">Email</label>
+              <input name="email" class="input" type="email" placeholder="email@domain.com" required>
+            </div>
+            <div>
+              <label class="text-xs muted">Pesan</label>
+              <textarea name="message" rows="5" class="input" placeholder="Halo Fawwaz..." required></textarea>
+            </div>
+
+            <div class="flex gap-3">
+              <button type="submit" class="btn-gold">Kirim Pesan</button>
+              <button type="reset" class="btn-ghost">Reset</button>
+            </div>
+            <div id="form-status" class="text-sm muted mt-2" aria-live="polite"></div>
+          </form>
+        </div>
+
+        <div class="card card-md">
+          <h3 class="font-semibold gold-text">Cara lain menghubungi</h3>
+          <p class="muted text-sm mb-3">Email, GitHub, LinkedIn (ganti link di sini jika sudah ada).</p>
+          <div class="mt-3 flex flex-col gap-2">
+            <div class="flex items-center justify-between p-3 border rounded">
+              <div>
+                <div class="text-xs muted">Email</div>
+                <div class="font-semibold">fawwazsetiawan02@gmail.com</div>
+              </div>
+              <a href="mailto:fawwaz@example.com" class="btn-ghost">Kirim</a>
+            </div>
+
+            <div class="flex items-center justify-between p-3 border rounded">
+              <div>
+                <div class="text-xs muted">GitHub</div>
+                <div class="font-semibold">github.com/fawwaz</div>
+              </div>
+              <a href="#" class="btn-ghost">Lihat</a>
+            </div>
+
+            <div class="flex items-center justify-between p-3 border rounded">
+              <div>
+                <div class="text-xs muted">LinkedIn</div>
+                <div class="font-semibold">linkedin.com/in/fawwaz</div>
+              </div>
+              <a href="#" class="btn-ghost">Lihat</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 border-t border-yellow-900/10 py-6">
+      <div class="container flex flex-col md:flex-row items-center justify-between gap-3">
+        <div class="muted text-sm">&copy; <span id="year"></span> Fawwaz — Portofolio Digital</div>
+        <div class="flex gap-3">
+          <a class="btn-ghost" href="#home">Ke atas</a>
+          <a class="btn-ghost" href="#">Privacy</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Modal template -->
+  <div id="modal" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50">
+    <div class="card p-6 max-w-2xl w-full">
+      <div class="flex items-start justify-between">
+        <h3 class="text-lg font-bold gold-text">Detail Skill</h3>
+        <button id="modal-close" class="btn-ghost">Tutup</button>
+      </div>
+      <div id="modal-body" class="mt-4 text-gray-200"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Initialize icons (lucide)
+    if(window.lucide) {
+      try { lucide.createIcons() } catch(e){ /* ignore */ }
+    }
+
+    // utility: select
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    // Set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ===========================================
+       Typing intro
+       =========================================== */
+    (function typing(){
+      const el = document.getElementById('intro-typing');
+      const text = "Website ini saya buat sebagai ruang eksplorasi digital — tempat belajar, mencoba, dan mengembangkan kemampuan di bidang teknologi: pemrograman dan desain web.";
+      let idx = 0;
+      el.innerHTML = ''; // reset
+      function tick(){
+        if(idx <= text.length){
+          el.innerHTML = text.slice(0, idx) + '<span class="cursor"></span>';
+          idx++;
+          setTimeout(tick, 18 + Math.random()*30);
+        } else {
+          // stop - keep cursor for a bit then remove
+          el.innerHTML = text;
+        }
+      }
+      setTimeout(tick, 350);
+    })();
+
+    /* ===========================================
+       Reveal on scroll (IntersectionObserver)
+       =========================================== */
+    (function revealOnScroll(){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('in-view');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('[data-reveal]').forEach(el => {
+        el.classList.add('reveal');
+        io.observe(el);
+      });
+    })();
+
+    /* ===========================================
+       Animate progress bars when visible
+       =========================================== */
+    (function progressBars(){
+      const fills = Array.from(document.querySelectorAll('.progress-fill'));
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            const fill = entry.target;
+            const target = parseInt(fill.getAttribute('data-target')||'0',10);
+            requestAnimationFrame(()=> fill.style.width = target + '%');
+            io.unobserve(fill);
+          }
+        });
+      }, {threshold: 0.2});
+      fills.forEach(f => io.observe(f));
+    })();
+
+    /* ===========================================
+       Skill filter + sort + expand/collapse + detail modal
+       =========================================== */
+    (function skillControls(){
+      const grid = document.getElementById('skills-grid');
+      const cards = Array.from(grid.children);
+
+      const filterEl = document.getElementById('skill-filter');
+      const sortEl = document.getElementById('skill-sort');
+      const expandAll = document.getElementById('expand-all');
+      const collapseAll = document.getElementById('collapse-all');
+
+      function applyFilter(){
+        const val = filterEl.value;
+        cards.forEach(card=>{
+          const t = card.getAttribute('data-type');
+          if(val === 'all' || val === t) {
+            card.style.display = '';
+          } else card.style.display = 'none';
+        });
+      }
+
+      function applySort(){
+        const val = sortEl.value;
+        let sorted = cards.slice();
+        if(val === 'alpha'){
+          sorted.sort((a,b)=>{
+            return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+          });
+        } else if(val === 'power'){
+          sorted.sort((a,b)=>{
+            return parseInt(b.getAttribute('data-power')) - parseInt(a.getAttribute('data-power'));
+          });
+        } else {
+          // default order as in DOM
+          sorted = cards.slice();
+        }
+        // append in order
+        sorted.forEach(c => grid.appendChild(c));
+      }
+
+      filterEl.addEventListener('change', ()=>{ applyFilter(); });
+      sortEl.addEventListener('change', ()=>{ applySort(); });
+
+      expandAll.addEventListener('click', ()=>{
+        cards.forEach(c => c.querySelector('.detail')?.classList.remove('hidden'));
+      });
+      collapseAll.addEventListener('click', ()=>{
+        cards.forEach(c => c.querySelector('.detail')?.classList.add('hidden'));
+      });
+
+      // detail toggles
+      grid.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.show-detail');
+        if(!btn) return;
+        const card = btn.closest('.skill-card');
+        const detail = card.querySelector('.detail');
+        if(detail){
+          detail.classList.toggle('hidden');
+        }
+      });
+
+      // modal detail on dblclick
+      grid.addEventListener('dblclick', (e)=>{
+        const card = e.target.closest('.skill-card');
+        if(!card) return;
+        const name = card.getAttribute('data-name');
+        const desc = card.querySelector('.detail')?.innerHTML || '';
+        showModal(`<strong>${name}</strong><p class="muted mt-2">${desc}</p>`);
+      });
+
+    })();
+
+    /* ===========================================
+       Modal handlers
+       =========================================== */
+    function showModal(html){
+      const modal = document.getElementById('modal');
+      const body = document.getElementById('modal-body');
+      body.innerHTML = html;
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+    document.getElementById('modal-close').addEventListener('click', ()=>{
+      const modal = document.getElementById('modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    });
+    // close clicking outside
+    document.getElementById('modal').addEventListener('click', (e)=>{
+      if(e.target.id === 'modal'){
+        e.currentTarget.classList.add('hidden');
+        e.currentTarget.style.display = 'none';
+      }
+    });
+
+    /* ===========================================
+       Contact form (fake submit)
+       =========================================== */
+    (function contactForm(){
+      const form = document.getElementById('contact-form');
+      const status = document.getElementById('form-status');
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const fd = new FormData(form);
+        status.textContent = 'Mengirim...';
+        // fake delay
+        setTimeout(()=>{
+          status.textContent = 'Pesan terkirim! Terima kasih — saya akan membalas jika ada waktu.';
+          form.reset();
+        }, 900);
+      });
+    })();
+
+    /* ===========================================
+       Resume download (generate simple PDF-like text blob)
+       =========================================== */
+    (function resumeDownload(){
+      const btn = document.getElementById('download-resume');
+      btn.addEventListener('click', ()=>{
+        const resume = [
+          'Fawwaz — Portofolio',
+          '',
+          'Tentang: Siswa XI SMK jurusan SIJA. Fokus: Web dev, Linux, Communication.',
+          '',
+          'Hard Skill:',
+          '- Frontend (HTML, CSS, JS) — 85%',
+          '- Backend (Server, DB) — 70%',
+          '- Linux — 75%',
+          '- Database (MySQL) — 60%',
+          '- Coding / Problem Solving — 80%',
+          '',
+          'Soft Skill:',
+          '- Teamwork — 88%',
+          '- Communication — 82%',
+          '- Adaptability — 78%',
+          '- Critical Thinking — 76%',
+          '',
+          'Kontak: fawwaz@example.com',
+          '',
+          'Generated: ' + new Date().toLocaleString()
+        ].join('\\n');
+
+        const blob = new Blob([resume], { type:'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'Fawwaz_CV.txt';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(()=> URL.revokeObjectURL(url), 2000);
+      });
+    })();
+
+    /* ===========================================
+       Menu toggle for mobile
+       =========================================== */
+    (function mobileMenu(){
+      const btn = document.getElementById('menu-toggle');
+      let open = false;
+      const nav = document.createElement('div');
+      nav.className = 'fixed left-4 right-4 top-16 z-50 p-4 card hidden md:hidden';
+      nav.innerHTML = `
+        <div class="flex flex-col gap-3">
+          <a href="#home" class="muted">Home</a>
+          <a href="#about" class="muted">Tentang</a>
+          <a href="#skills" class="muted">Skill</a>
+          <a href="#projects" class="muted">Proyek</a>
+          <a href="#contact" class="muted">Kontak</a>
+        </div>
+      `;
+      document.body.appendChild(nav);
+      btn.addEventListener('click', ()=>{
+        open = !open;
+        nav.style.display = open ? 'block' : 'none';
+      });
+    })();
+
+    /* ===========================================
+       Small accessibility & UX polish
+       =========================================== */
+    (function polish(){
+      // smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          const href = a.getAttribute('href');
+          if(href === '#') return;
+          const target = document.querySelector(href);
+          if(target){
+            e.preventDefault();
+            target.scrollIntoView({ behavior:'smooth', block:'start' });
+          }
+        });
+      });
+
+      // Keyboard: Esc closes modal
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape'){
+          const modal = document.getElementById('modal');
+          if(!modal.classList.contains('hidden')){
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+          }
+        }
+      });
+    })();
+
+  </script>
 </body>
 </html>
